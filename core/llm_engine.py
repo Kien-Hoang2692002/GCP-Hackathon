@@ -22,10 +22,19 @@ Hãy phân tích ý tưởng của người dùng thật nghiêm ngặt và BẮ
   "marketFitScore": 75,
   "scalabilityScore": 90,
   "criticalFlaw": "Điểm yếu chí mạng nhất của ý tưởng này là gì? (Viết thẳng thắn, không né tránh)",
-  "nextSteps": ["Hành động 1", "Hành động 2", "Hành động 3"]
+  "nextSteps": ["Hành động 1", "Hành động 2", "Hành động 3"],
+  "competitors": [
+    {{"name": "Tên đối thủ thực tế 1", "innovation_score": 30, "price_score": 80}},
+    {{"name": "Tên đối thủ thực tế 2", "innovation_score": 50, "price_score": 60}},
+    {{"name": "Dự án của bạn", "innovation_score": 90, "price_score": 40}}
+  ]
 }}
 
-Lưu ý: Các điểm số phải là số nguyên (0-100)."""
+Lưu ý: 
+- Các điểm số (Score) phải là số nguyên (0-100).
+- innovation_score: Mức độ sáng tạo/công nghệ.
+- price_score: Mức giá/Chi phí (càng cao càng đắt).
+- BẮT BUỘC phải có mảng competitors gồm ít nhất 2 đối thủ thực tế trên thị trường và 1 item tên "Dự án của bạn" để vẽ biểu đồ định vị."""
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     payload = {

@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 from config.frameworks import FRAMEWORKS
 from core.vector_engine import find_best_framework
 from core.llm_engine import evaluate_idea_with_llm
+from core.pdf_generator import create_pdf_report
+import plotly.express as px
+import pandas as pd
 
 # Load API Key
 load_dotenv('.env')
@@ -118,6 +121,46 @@ if st.button("🚀 Thẩm Định Bằng Dual-Engine", type="primary", use_conta
             st.subheader("📋 Kế Hoạch Hành Động Tiếp Theo")
             for i, step in enumerate(result['nextSteps']):
                 st.checkbox(step, key=f"step_{i}")
+
+            # Biểu đồ Đối thủ cạnh tranh (Blue Ocean Strategy Map)
+            if 'competitors' in result and result['competitors']:
+                st.divider()
+                st.subheader("📊 Bản Đồ Đại Dương Xanh (Competitor Landscape)")
+                st.markdown("Biểu đồ so sánh mức độ sáng tạo (Innovation) và chi phí (Price) giữa dự án của bạn và các đối thủ thực tế.")
+                
+                df = pd.DataFrame(result['competitors'])
+                
+                # Vẽ biểu đồ Scatter bằng Plotly
+                fig = px.scatter(
+                    df, 
+                    x="price_score", 
+                    y="innovation_score", 
+                    text="name",
+                    size=[20] * len(df), # Fix kích thước bong bóng
+                    color="name",
+                    labels={"price_score": "Chi phí / Giá cả (Càng cao càng đắt)", "innovation_score": "Mức độ Sáng tạo & Công nghệ"},
+                    title="Định Vị Sản Phẩm Trên Thị Trường"
+                )
+                
+                fig.update_traces(textposition='top center', marker=dict(line=dict(width=2, color='DarkSlateGrey')))
+                fig.update_layout(showlegend=False, xaxis=dict(range=[0, 110]), yaxis=dict(range=[0, 110]))
+                
+                st.plotly_chart(fig, use_container_width=True)
+                
+            # Nút tải PDF
+            st.divider()
+            try:
+                pdf_bytes = create_pdf_report(result, selected_fw['name'], idea_input)
+                st.download_button(
+                    label="📄 Tải Xuống Báo Cáo Gọi Vốn (PDF)",
+                    data=pdf_bytes,
+                    file_name="GCP_Startup_Report.pdf",
+                    mime="application/pdf",
+                    type="primary",
+                    use_container_width=True
+                )
+            except Exception as pdf_err:
+                st.warning(f"Tính năng xuất PDF đang gặp sự cố font chữ: {pdf_err}")
 
         except Exception as e:
             st.error(f"❌ Có lỗi xảy ra trong quá trình xử lý:\n\n{str(e)}")
